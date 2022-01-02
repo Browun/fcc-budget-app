@@ -1,3 +1,4 @@
+from math import floor
 from typing import List
 from itertools import zip_longest
 
@@ -113,10 +114,6 @@ class Category:
         return str(f"{header}{''.join(items)}{total}")
 
 
-f"*************Food*************\ndeposit                 900.00\nmilk, cereal, eggs, bac -45.67\nTransfer to Entertainme -20.00\nTotal: 834.33"
-
-
-
 def create_spend_chart(categories: List['Category']):
     '''
     Given a list of up to 4 Category objects  that returns a bar chart string output. This will show the percentage spent in each category based on withdrawals, with 0 - 100 on the y-axis in increments of 10, and 'o' representing a single unit filling one of these increments. The x-axis will have the names of the categories vertically spelt, and a title at the top called 'Percentage spent by category'.
@@ -166,10 +163,10 @@ def create_spend_chart(categories: List['Category']):
             name_output.append([letter + name_gap for letter in name])
         else:
             name_output.append([letter + name_gap for letter in name])
-    
+
     name_output = list(zip_longest(*name_output, fillvalue='   '))
 
-    name_output = ''.join([y_axis_gap + ' ' + ''.join(list(x)) + ' \n' for x in name_output])[:-1] # Remove trailing newline
+    name_output = ''.join([y_axis_gap + ' ' + ''.join(list(x)) + '\n' for x in name_output])[:-1] # Remove last trailing newline
 
     # Construct data with name and amount within each object
     data = {
@@ -177,7 +174,7 @@ def create_spend_chart(categories: List['Category']):
         for obj in categories
     }
     total_spend: int = sum([x for x in data.values()])
-    data = {key: round((value / total_spend) * 100, -1) for key, value in data.items()}
+    data = {key: floor(value / total_spend * 10) for key, value in data.items()}
 
     # For each level in the y-axis, produce a row
     body: List[str] = []
@@ -192,7 +189,7 @@ def create_spend_chart(categories: List['Category']):
         # For each category in the row
         for category in category_names:
             # If the amount is high enough, add to this row
-            if data[category] >= entry * float(10):
+            if data[category] >= entry:
                 row += bar_full
             else:
                 row += bar_empty
